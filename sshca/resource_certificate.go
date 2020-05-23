@@ -147,8 +147,8 @@ func CreateCertificate(d *schema.ResourceData, cert *ssh.Certificate, meta inter
 
 	timeNow := now()
 	timeExpire := timeNow.Add(time.Duration(d.Get("validity_period_hours").(int)) * time.Hour)
-	cert.ValidBefore = uint64(timeNow.Unix())
-	cert.ValidAfter = uint64(timeExpire.Unix())
+	cert.ValidAfter = uint64(timeNow.Unix())
+	cert.ValidBefore = uint64(timeExpire.Unix())
 
 	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
 	serial, err := rand.Int(rand.Reader, serialNumberLimit)
