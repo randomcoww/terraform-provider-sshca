@@ -16,8 +16,8 @@ func TestClientCert(t *testing.T) {
 			{
 				Config: fmt.Sprintf(`
                     resource "sshca_client_cert" "test1" {
-												key_algorithm = "ECDSA"
-                        private_key_pem = <<EOT
+												ca_key_algorithm = "ECDSA"
+                        ca_private_key_pem = <<EOT
 %s
 EOT
 												public_key_openssh = "%s"

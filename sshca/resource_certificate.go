@@ -21,14 +21,14 @@ var now = func() time.Time {
 
 func resourceCertificateCommonSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
-		"key_algorithm": {
+		"ca_key_algorithm": {
 			Type:        schema.TypeString,
 			Required:    true,
 			Description: "Name of the algorithm to use to generate the certificate's private key",
 			ForceNew:    true,
 		},
 
-		"private_key_pem": {
+		"ca_private_key_pem": {
 			Type:        schema.TypeString,
 			Required:    true,
 			Description: "PEM-encoded private key that the certificate will belong to",
@@ -157,7 +157,7 @@ func CreateCertificate(d *schema.ResourceData, cert *ssh.Certificate, meta inter
 		return fmt.Errorf("failed to generate serial number: %s", err)
 	}
 
-	privateKey, err := parsePrivateKey(d, "private_key_pem", "key_algorithm")
+	privateKey, err := parsePrivateKey(d, "ca_private_key_pem", "ca_key_algorithm")
 	if err != nil {
 		return err
 	}
