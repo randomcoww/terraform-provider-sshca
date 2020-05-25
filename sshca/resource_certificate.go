@@ -125,6 +125,7 @@ func CreateCertificate(d *schema.ResourceData, cert *ssh.Certificate, meta inter
 		return err
 	}
 	cert.Key = publicKey
+	cert.KeyId = d.Get("key_id").(string)
 
 	permissions := ssh.Permissions{
 		CriticalOptions: make(map[string]string),

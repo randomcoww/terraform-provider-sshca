@@ -1,8 +1,12 @@
 package sshca
 
 import (
+	"encoding/base64"
 	"fmt"
+	"reflect"
+	"strings"
 	"testing"
+	"time"
 
 	r "github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
@@ -32,6 +36,10 @@ EOT
 													"permit-X11-forwarding",
 													"permit-agent-forwarding",
 												]
+												critical_options = [
+													"permit-port-forwarding",
+													"permit-pty",
+												]
 										}
 
                     output "authorized_key" {
@@ -45,12 +53,59 @@ EOT
 						return fmt.Errorf("output for \"authorized_key\" is not a string")
 					}
 
-					publicKey, _, _, _, err := ssh.ParseAuthorizedKey([]byte(got))
+					key, _ := base64.StdEncoding.DecodeString(strings.Split(got, " ")[1])
+					parsedKey, err := ssh.ParsePublicKey(key)
 					if err != nil {
 						return fmt.Errorf("error parsing authorized key: %s", err)
 					}
-					if expected, got := ssh.CertAlgoECDSA521v01, publicKey.Type(); got != expected {
-						return fmt.Errorf("incorrect public key type: expected %v, got %v", expected, got)
+					cert := parsedKey.(*ssh.Certificate)
+
+					if expected, got := "testUser", cert.KeyId; got != expected {
+						return fmt.Errorf("incorrect KeyId: %v, wanted %v", got, expected)
+					}
+
+					if expected, got := uint32(1), cert.CertType; got != expected {
+						return fmt.Errorf("incorrect CertType: %v, wanted %v", got, expected)
+					}
+
+					if cert.Signature == nil {
+						return fmt.Errorf("incorrect Signature: %v", cert.Signature)
+					}
+
+					if time.Unix(int64(cert.ValidAfter), 0).After(time.Now()) {
+						return fmt.Errorf("incorrect ValidAfter: %v", cert.ValidAfter)
+					}
+
+					if time.Unix(int64(cert.ValidBefore), 0).Before(time.Now()) {
+						return fmt.Errorf("incorrect ValidBefore: %v", cert.ValidBefore)
+					}
+
+					if expected, got := 600*time.Hour, time.Unix(int64(cert.ValidBefore), 0).Sub(time.Unix(int64(cert.ValidAfter), 0)); got != expected {
+						return fmt.Errorf("incorrect ttl: expected: %v, actualL %v", expected, got)
+					}
+
+					principals := []string{
+						"test1.host.local",
+						"test2.host.local",
+					}
+					if expected, got := principals, cert.ValidPrincipals; !reflect.DeepEqual(got, expected) {
+						return fmt.Errorf("incorrect ValidPrincipals: expected: %#v actual: %#v", expected, got)
+					}
+
+					permissions := map[string]string{
+						"permit-X11-forwarding":   "",
+						"permit-agent-forwarding": "",
+					}
+					if expected, got := permissions, cert.Permissions.Extensions; !reflect.DeepEqual(got, expected) {
+						return fmt.Errorf("incorrect Permissions.Extensions: expected: %#v actual: %#v", expected, got)
+					}
+
+					criticalOptions := map[string]string{
+						"permit-port-forwarding": "",
+						"permit-pty":             "",
+					}
+					if expected, got := criticalOptions, cert.Permissions.CriticalOptions; !reflect.DeepEqual(got, expected) {
+						return fmt.Errorf("incorrect Permissions.CriticalOptions: expected: %#v actual: %#v", expected, got)
 					}
 
 					return nil
