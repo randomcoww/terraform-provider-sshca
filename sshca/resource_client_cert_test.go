@@ -19,33 +19,32 @@ func TestClientCert(t *testing.T) {
 		Steps: []r.TestStep{
 			{
 				Config: fmt.Sprintf(`
-                    resource "sshca_client_cert" "test1" {
-												ca_key_algorithm = "ECDSA"
-                        ca_private_key_pem = <<EOT
+					resource "sshca_client_cert" "test1" {
+						ca_key_algorithm = "ECDSA"
+						ca_private_key_pem = <<EOT
 %s
 EOT
-												public_key_openssh = "%s"
-												validity_period_hours = 600
-												early_renewal_hours = 300
-												key_id = "testUser"
-												valid_principals = [
-													"test1.host.local",
-													"test2.host.local",
-												]
-												extensions = [
-													"permit-X11-forwarding",
-													"permit-agent-forwarding",
-												]
-												critical_options = [
-													"permit-port-forwarding",
-													"permit-pty",
-												]
-										}
+						public_key_openssh = "%s"
+						validity_period_hours = 600
+						early_renewal_hours = 300
+						key_id = "testUser"
+						valid_principals = [
+							"test1.host.local",
+							"test2.host.local",
+						]
+						extensions = [
+							"permit-X11-forwarding",
+							"permit-agent-forwarding",
+						]
+						critical_options = [
+							"permit-port-forwarding",
+							"permit-pty",
+						]
+					}
 
-                    output "authorized_key" {
-                        value = sshca_client_cert.test1.cert_authorized_key
-										}
-                `, testPrivateKey, testPublicKeyOpenSSH),
+					output "authorized_key" {
+						value = sshca_client_cert.test1.cert_authorized_key
+					}`, testPrivateKey, testPublicKeyOpenSSH),
 				Check: func(s *terraform.State) error {
 					gotUntyped := s.RootModule().Outputs["authorized_key"].Value
 					got, ok := gotUntyped.(string)
