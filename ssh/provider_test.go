@@ -1,4 +1,4 @@
-package sshca
+package ssh
 
 import (
 	"testing"
@@ -14,7 +14,7 @@ func TestProvider(t *testing.T) {
 }
 
 var testProviders = map[string]terraform.ResourceProvider{
-	"sshca": Provider(),
+	"ssh": Provider(),
 }
 
 var testPrivateKey = `

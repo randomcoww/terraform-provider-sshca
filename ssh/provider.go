@@ -1,4 +1,4 @@
-package sshca
+package ssh
 
 import (
 	"crypto/sha1"
@@ -12,8 +12,8 @@ import (
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		ResourcesMap: map[string]*schema.Resource{
-			"sshca_host_cert":   resourceHostCert(),
-			"sshca_client_cert": resourceClientCert(),
+			"ssh_host_cert":   resourceHostCert(),
+			"ssh_client_cert": resourceClientCert(),
 		},
 	}
 }

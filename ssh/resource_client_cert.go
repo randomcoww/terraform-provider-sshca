@@ -1,13 +1,13 @@
-package sshca
+package ssh
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"golang.org/x/crypto/ssh"
 )
 
-func resourceHostCert() *schema.Resource {
+func resourceClientCert() *schema.Resource {
 	return &schema.Resource{
-		Create:        CreateHostCert,
+		Create:        CreateClientCert,
 		Delete:        DeleteCertificate,
 		Read:          ReadCertificate,
 		Update:        UpdateCertificate,
@@ -16,9 +16,9 @@ func resourceHostCert() *schema.Resource {
 	}
 }
 
-func CreateHostCert(d *schema.ResourceData, meta interface{}) error {
+func CreateClientCert(d *schema.ResourceData, meta interface{}) error {
 	cert := &ssh.Certificate{
-		CertType: certTypeHost,
+		CertType: certTypeClient,
 	}
 
 	return CreateCertificate(d, cert, meta)

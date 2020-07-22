@@ -1,4 +1,4 @@
-module github.com/randomcoww/terraform-provider-sshca
+module github.com/randomcoww/terraform-provider-ssh
 
 go 1.14
 

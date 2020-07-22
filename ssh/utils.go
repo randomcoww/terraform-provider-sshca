@@ -1,7 +1,7 @@
 // This is completely ripped off of https://github.com/hashicorp/terraform-provider-tls
 // Modified to sign SSH public keys and generate authorized_key entry
 
-package sshca
+package ssh
 
 import (
 	"crypto/x509"

@@ -1,4 +1,4 @@
-package sshca
+package ssh
 
 import (
 	"encoding/base64"
@@ -19,7 +19,7 @@ func TestClientCert(t *testing.T) {
 		Steps: []r.TestStep{
 			{
 				Config: fmt.Sprintf(`
-					resource "sshca_client_cert" "test1" {
+					resource "ssh_client_cert" "test1" {
 						ca_key_algorithm = "ECDSA"
 						ca_private_key_pem = <<EOT
 %s
@@ -43,7 +43,7 @@ EOT
 					}
 
 					output "authorized_key" {
-						value = sshca_client_cert.test1.cert_authorized_key
+						value = ssh_client_cert.test1.cert_authorized_key
 					}`, testPrivateKey, testPublicKeyOpenSSH),
 				Check: func(s *terraform.State) error {
 					gotUntyped := s.RootModule().Outputs["authorized_key"].Value

@@ -1,4 +1,4 @@
-package sshca
+package ssh
 
 import (
 	"crypto/rand"

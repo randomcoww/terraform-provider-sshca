@@ -1,7 +1,8 @@
 TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 WEBSITE_REPO=github.com/hashicorp/terraform-website
-PKG_NAME=tls
+PKG_NAME=ssh
+CGO_ENABLED=0
 
 default: build
 
